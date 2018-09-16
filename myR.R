@@ -186,7 +186,7 @@ return(seatDistance)
 
 ###five way(B2-G4)
 ##set a five way range
-makeRange<-function(outputSelect){
+makeRange<-function(outputSelect,seatListMatrix){
 seatTotal_5w <- seq(from =1,to=(row-1)*(col-2),by=1) #5way total postion
 seatRowLen_5w <-col-2#5way row len for go by next row
 startPoint=c(2,2)#the position for start to cacutale the seat range 
@@ -301,6 +301,13 @@ return(0)
 
 ############################## Fitness Function ##############################
 caculateFitnessValue<-function(seatMatrix,seatListMatrix,seatList){
+
+
+fiveWaySeat=makeRange(2,seatListMatrix)
+threeWayLSeat=makeRange(4,seatListMatrix)
+threeWayRSeat=makeRange(6,seatListMatrix)
+twoWaySeat=makeRange(8,seatListMatrix)
+oneWaySeat=makeRange(10,seatListMatrix)
   
 ###Fitness function
 ##5ST1 coculate the relationship by surround 
@@ -789,6 +796,7 @@ oneWayDistance=seatDistance[oneWay]
 myConVal=stuData[oneWaySeat,5] #conduct value操行成績
 oneWayConVal=myConVal*0.1*oneWayDistance*wST3
 
+
 ##1ST4
 oneWaySexVal<-array(dim=length(oneWay))
 ##sex 1ST4
@@ -954,16 +962,16 @@ seatListMatrix=decode(seatList,row,col)
 seatDistance=makeSeatDistanceMatrix()
 
 ###inital data
-fiveWay=makeRange(1)
-fiveWaySeat=makeRange(2)
-threeWayL=makeRange(3)
-threeWayLSeat=makeRange(4)
-threeWayR=makeRange(5)
-threeWayRSeat=makeRange(6)
-twoWay=makeRange(7)
-twoWaySeat=makeRange(8)
-oneWay=makeRange(9)
-oneWaySeat=makeRange(10)
+fiveWay=makeRange(1,seatListMatrix)
+fiveWaySeat=makeRange(2,seatListMatrix)
+threeWayL=makeRange(3,seatListMatrix)
+threeWayLSeat=makeRange(4,seatListMatrix)
+threeWayR=makeRange(5,seatListMatrix)
+threeWayRSeat=makeRange(6,seatListMatrix)
+twoWay=makeRange(7,seatListMatrix)
+twoWaySeat=makeRange(8,seatListMatrix)
+oneWay=makeRange(9,seatListMatrix)
+oneWaySeat=makeRange(10,seatListMatrix)
 
 
 ############################## Genetic Algorithm ##############################
