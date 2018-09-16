@@ -850,6 +850,80 @@ IIIR=threeWayRRlsValue+threeWayRGv+threeWayRConVal+threeWayRSexVal
 II=twoWayRlsValue+twoWayGv+twoWayConVal+twoWaySexVal
 I=oneWayRlsValue+oneWayGv+oneWayConVal+oneWaySexVal
 
+cat("st question value\n")
+st1 = 0
+for(i in 1:length(fiveWayRlsValue)){
+  st1 = st1 + fiveWayRlsValue[i]
+}
+for(i in 1:length(threeWayLRlsValue)){
+  st1 = st1 + threeWayLRlsValue[i]
+}
+for(i in 1:length(threeWayRRlsValue)){
+  st1 = st1 + threeWayRRlsValue[i]
+}
+for(i in 1:length(twoWayRlsValue)){
+  st1 = st1 + twoWayRlsValue[i]
+}
+for(i in 1:length(oneWayRlsValue)){
+  st1 = st1 + oneWayRlsValue[i]
+}
+
+
+st2 = 0
+for(i in 1:length(fiveWayGv)){
+  st2 = st2 + fiveWayGv[i]
+}
+for(i in 1:length(threeWayLGv)){
+  st2 = st2 + threeWayLGv[i]
+}
+for(i in 1:length(threeWayRGv)){
+  st2 = st2 + threeWayRGv[i]
+}
+for(i in 1:length(twoWayGv)){
+  st2 = st2 + twoWayGv[i]
+}
+for(i in 1:length(oneWayGv)){
+  st2 = st2 + oneWayGv[i]
+}
+
+st3 = 0
+for(i in 1:length(fiveWayConVal)){
+  st3 = st3 + fiveWayConVal[i]
+}
+for(i in 1:length(threeWayLConVal)){
+  st3 = st3 + threeWayLConVal[i]
+}
+for(i in 1:length(threeWayRConVal)){
+  st3 = st3 + threeWayRConVal[i]
+}
+for(i in 1:length(twoWayConVal)){
+  st3 = st3 + twoWayConVal[i]
+}
+for(i in 1:length(oneWayConVal)){
+  st3 = st3 + oneWayConVal[i]
+}
+
+st4 = 0
+for(i in 1:length(fiveWaySexVal)){
+  st4 = st4 + fiveWaySexVal[i]
+}
+for(i in 1:length(threeWayLSexVal)){
+  st4 = st4 + threeWayLSexVal[i]
+}
+for(i in 1:length(threeWayRSexVal)){
+  st4 = st4 + threeWayRSexVal[i]
+}
+for(i in 1:length(twoWaySexVal)){
+  st4 = st4 + twoWaySexVal[i]
+}
+for(i in 1:length(oneWaySexVal)){
+  st4 = st4 + oneWaySexVal[i]
+}
+
+
+print(paste("st1",st1,"st2",st2,"st3",st3,"st4",st4))
+
+
 rs=0
 for(i in 1:length(fiveWay)){
   rs=rs+IV[i]
