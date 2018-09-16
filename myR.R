@@ -60,7 +60,6 @@
 ###inital and general function def
 rm(list=ls())
 printf <- function(...) cat(sprintf(...))
-
 ############################## Data Pretreatment setting ##############################
 
 ###load data
@@ -92,6 +91,12 @@ dST1=0
 dST2=0
 dST3=0
 dST4=0
+
+###
+fST1 = 0
+fST2 = 0
+fST3 = 0
+fST4 = 0
 
 ###test
 codeTest=0
@@ -301,7 +306,6 @@ return(0)
 
 ############################## Fitness Function ##############################
 caculateFitnessValue<-function(seatMatrix,seatListMatrix,seatList){
-
 
 fiveWaySeat=makeRange(2,seatListMatrix)
 threeWayLSeat=makeRange(4,seatListMatrix)
@@ -928,7 +932,6 @@ for(i in 1:length(oneWaySexVal)){
   st4 = st4 + oneWaySexVal[i]
 }
 
-
 print(paste("st1",st1,"st2",st2,"st3",st3,"st4",st4))
 
 
@@ -975,6 +978,8 @@ oneWaySeat=makeRange(10,seatListMatrix)
 
 
 ############################## Genetic Algorithm ##############################
+##
+
 
 ###
 log=0
@@ -1002,7 +1007,7 @@ mutation_value=75 #10=1% 1=0.1%
 
 elite=1 #菁英政策 0=disable 1=enable 
 
-doTimes=500
+doTimes=5000
 
 
 ##
@@ -1021,6 +1026,7 @@ fitnessValue[i]=caculateFitnessValue(seatMatrix,seatListMatrix,seatList)
 cat(chromosome[i,],"/",fitnessValue[i],"\n")
 }
 }
+Sys.sleep(3)
 
 oChromosomeFt=fitnessValue
 
@@ -1255,6 +1261,7 @@ plot(log)
 
 #
 cat("Max Fitness value:",max(log),'\n')
+
 
 ##顯示結果
 #decode(logMaxChromosome,row,col)  
