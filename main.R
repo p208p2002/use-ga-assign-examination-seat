@@ -6,8 +6,8 @@ DEBUG = 1
 LOG = 0
 
 #Class ENV setting
-CLASS_ROW = 5
-CLASS_COL = 7
+CLASS_ROW = 4
+CLASS_COL = 4
 CLASS_SIZE = CLASS_ROW*CLASS_COL
 
 #Student data
@@ -79,7 +79,7 @@ makeChromosome<-function(populationSize=POPULATION_SIZE,row=CLASS_ROW,col=CLASS_
   return(chromosome)
 }
 
-getNearByStudents<-function(studentSeatMatrix,stuAt_x,stuAt_y){
+getNearByStudents<-function(studentSeatMatrix,stuAt_y,stuAt_x){
   #
   nearByStudents = array()
   hasLeft = 0
@@ -102,15 +102,15 @@ getNearByStudents<-function(studentSeatMatrix,stuAt_x,stuAt_y){
   
   #
   if(hasLeft)
-    nearByStudents = append(nearByStudents,studentSeatMatrix[stuAt_x-1,stuAt_y])
+    nearByStudents = append(nearByStudents,studentSeatMatrix[stuAt_y,stuAt_x-1])
   if(hasLeftUp)
-    nearByStudents = append(nearByStudents,studentSeatMatrix[stuAt_x-1,stuAt_y-1])
+    nearByStudents = append(nearByStudents,studentSeatMatrix[stuAt_y-1,stuAt_x-1])
   if(hasUp)
-    nearByStudents = append(nearByStudents,studentSeatMatrix[stuAt_x,stuAt_y-1])
+    nearByStudents = append(nearByStudents,studentSeatMatrix[stuAt_y-1,stuAt_x])
   if(hasRightUp)
-    nearByStudents = append(nearByStudents,studentSeatMatrix[stuAt_x+1,stuAt_y-1])
+    nearByStudents = append(nearByStudents,studentSeatMatrix[stuAt_y-1,stuAt_x+1])
   if(hasRight)
-    nearByStudents = append(nearByStudents,studentSeatMatrix[stuAt_x+1,stuAt_y])
+    nearByStudents = append(nearByStudents,studentSeatMatrix[stuAt_y,stuAt_x+1])
   
   nearByStudents = c(nearByStudents[2:length(nearByStudents)])
   return(nearByStudents)
@@ -122,10 +122,20 @@ caculateFitnessValue<-function(chromosome){
     for(j in 1:CLASS_COL){
       dlog(matrix[i,j]," ")
     }
-    #dlog("\n")
+    dlog("\n--\n")
+    
+    if(DEBUG){
+      for(j in 1:CLASS_COL){
+        a=getNearByStudents(matrix,i,j)
+        cat(a," ")
+        cat("\n")
+      }
+      cat("end\n")
+    }
     
     #f1與周圍同學友好度
-    #getNearByStudents(matrix,i,j)
+   
+    
     
     #f2鄰近座位平時成績接近較好
     
@@ -149,6 +159,7 @@ cat("------init chromosome------\n")
 chromosomes=makeChromosome()
 for(i in 1:POPULATION_SIZE){
   caculateFitnessValue(chromosomes[i,])
-  cat(paste0("chromosome",i),chromosomes[i,],"\n\n")
+  cat("@@\n\n")
+  #cat(paste0("chromosome",i),chromosomes[i,],"\n\n")
 }
 
