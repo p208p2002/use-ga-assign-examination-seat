@@ -11,11 +11,11 @@ CLASS_COL = 4
 CLASS_SIZE = CLASS_ROW*CLASS_COL
 
 #Student data
-STUDENT_DATA_PATH = '.\\rdata.csv'
+STUDENT_DATA_PATH = '.\\rdata_utf8_33.csv'
 
 #Fitness weight setting
-ST2_WEIGHT=0.2
-ST3_WEIGHT=0.1
+F2_WEIGHT=0.2
+F3_WEIGHT=0.1
 
 #GA setting
 POPULATION_SIZE = 6 #世代大小(必須是偶數)
@@ -118,31 +118,38 @@ getNearByStudents<-function(studentSeatMatrix,stuAt_y,stuAt_x){
 
 caculateFitnessValue<-function(chromosome){
   matrix = decode(chromosome)
+  f1Val = 0
+  f2Val = 0
+  f3Val = 0
+  f4Val = 0
   for(i in 1:CLASS_ROW){
     for(j in 1:CLASS_COL){
-      dlog(matrix[i,j]," ")
-    }
-    dlog("\n--\n")
-    
-    if(DEBUG){
-      for(j in 1:CLASS_COL){
-        a=getNearByStudents(matrix,i,j)
-        cat(a," ")
-        cat("\n")
+      #dlog(matrix[i,j]," ")
+      self = matrix[i,j]
+      nearByStudent = getNearByStudents(matrix,i,j)
+      
+      #f1與周圍同學友好度
+      for(k in 1:length(nearByStudent)){
+        f1Val = f1Val + studentData[self,5+nearByStudent[k]]
       }
-      cat("end\n")
+      
+      #f2鄰近座位平時成績接近較好
+      nearByStudentUsualGrades = 0
+      for(k in 1:length(nearByStudent)){
+        nearByStudentUsualGrades = nearByStudentUsualGrades + studentData[nearByStudent[k],4]
+      }
+      selfUsualGrades = studentData[self,4]
+      f2Val = f2Val + abs((selfUsualGrades*length(nearByStudent)-nearByStudentUsualGrades)*F2_WEIGHT/length(nearByStudent))*-1
+      
+      #f3操行成績越低座位要越前面
+      #f4鄰近座位性別不同較好
+      
+      
     }
-    
-    #f1與周圍同學友好度
-   
-    
-    
-    #f2鄰近座位平時成績接近較好
-    
-    #f3操行成績越低座位要越前面
-    
-    #f4鄰近座位性別不同較好
   }
+  
+  cat("f1",f1Val,"\n")
+  cat("f2",f2Val,"\n")
 }
 
 #------function------
@@ -159,7 +166,6 @@ cat("------init chromosome------\n")
 chromosomes=makeChromosome()
 for(i in 1:POPULATION_SIZE){
   caculateFitnessValue(chromosomes[i,])
-  cat("@@\n\n")
-  #cat(paste0("chromosome",i),chromosomes[i,],"\n\n")
+  cat(paste0("chromosome",i),chromosomes[i,],"\n")
 }
 
