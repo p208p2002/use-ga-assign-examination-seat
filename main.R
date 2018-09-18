@@ -6,8 +6,8 @@ DEBUG = 1
 LOG = 0
 
 #Class ENV setting
-CLASS_ROW = 4
-CLASS_COL = 4
+CLASS_ROW = 5
+CLASS_COL = 7
 CLASS_SIZE = CLASS_ROW*CLASS_COL
 
 #Student data
@@ -59,7 +59,7 @@ encode<-function(populationSize,row=CLASS_ROW,col=CLASS_COL){
 }
 
 #一維轉二維
-decode<-function(seatList,row=CLASS_ROW,col=CLASS_ROW){
+decode<-function(seatList,row=CLASS_ROW,col=CLASS_COL){
   seatListMatrix<-matrix(nrow=row,ncol=col,byrow=TRUE)#about whose seat
   k=0
   for(i in 1:row){
@@ -79,21 +79,59 @@ makeChromosome<-function(populationSize=POPULATION_SIZE,row=CLASS_ROW,col=CLASS_
   return(chromosome)
 }
 
+getNearByStudents<-function(studentSeatMatrix,stuAt_x,stuAt_y){
+  #
+  nearByStudents = array()
+  hasLeft = 0
+  hasLeftUp = 0
+  hasUp = 0
+  hasRightUp = 0
+  hasRight = 0
+  
+  #
+  if(stuAt_x-1 >= 1)
+    hasLeft = 1
+  if(stuAt_x-1 >= 1 && stuAt_y-1 >= 1)
+    hasLeftUp = 1
+  if(stuAt_y-1 >= 1)
+    hasUp = 1
+  if(stuAt_x+1 <= CLASS_COL && stuAt_y-1 >= 1)
+    hasRightUp = 1
+  if(stuAt_x+1 <= CLASS_COL)
+    hasRight = 1
+  
+  #
+  if(hasLeft)
+    nearByStudents = append(nearByStudents,studentSeatMatrix[stuAt_x-1,stuAt_y])
+  if(hasLeftUp)
+    nearByStudents = append(nearByStudents,studentSeatMatrix[stuAt_x-1,stuAt_y-1])
+  if(hasUp)
+    nearByStudents = append(nearByStudents,studentSeatMatrix[stuAt_x,stuAt_y-1])
+  if(hasRightUp)
+    nearByStudents = append(nearByStudents,studentSeatMatrix[stuAt_x+1,stuAt_y-1])
+  if(hasRight)
+    nearByStudents = append(nearByStudents,studentSeatMatrix[stuAt_x+1,stuAt_y])
+  
+  nearByStudents = c(nearByStudents[2:length(nearByStudents)])
+  return(nearByStudents)
+}
+
 caculateFitnessValue<-function(chromosome){
   matrix = decode(chromosome)
   for(i in 1:CLASS_ROW){
     for(j in 1:CLASS_COL){
       dlog(matrix[i,j]," ")
     }
-    dlog("\n")
+    #dlog("\n")
     
     #f1與周圍同學友好度
+    #getNearByStudents(matrix,i,j)
     
-    #f2
+    #f2鄰近座位平時成績接近較好
     
-    #f3
+    #f3操行成績越低座位要越前面
     
-    #f4
+    #f4鄰近座位性別不同較好
   }
 }
 
