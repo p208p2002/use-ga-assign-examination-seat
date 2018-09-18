@@ -26,12 +26,13 @@ ELITE_ENABLE=1 #菁英政策 0=disable 1=enable
 DO_TIMES=5000
 
 #------function------
-#
+#cat for debug mode
 dlog<-function(...){
   if(DEBUG){
     cat(...)
   }
 }
+
 #
 encode<-function(populationSize,row=CLASS_ROW,col=CLASS_COL){
   ##creat a random seat list
@@ -57,6 +58,18 @@ encode<-function(populationSize,row=CLASS_ROW,col=CLASS_COL){
   return(seatList=seatListB)
 }
 
+#一維轉二維
+decode<-function(seatList,row=CLASS_ROW,col=CLASS_ROW){
+  seatListMatrix<-matrix(nrow=row,ncol=col,byrow=TRUE)#about whose seat
+  k=0
+  for(i in 1:row){
+    for(j in 1:col){
+      k=k+1
+      seatListMatrix[i,j]=seatList[k]
+    }
+  }
+  return(seatListMatrix)
+}
 #
 makeChromosome<-function(populationSize=POPULATION_SIZE,row=CLASS_ROW,col=CLASS_COL){
   chromosome<-matrix(c(1:1),nrow=populationSize,ncol=col*row,byrow=TRUE)
@@ -64,6 +77,24 @@ makeChromosome<-function(populationSize=POPULATION_SIZE,row=CLASS_ROW,col=CLASS_
     chromosome[i,]=encode()
   }
   return(chromosome)
+}
+
+caculateFitnessValue<-function(chromosome){
+  matrix = decode(chromosome)
+  for(i in 1:CLASS_ROW){
+    for(j in 1:CLASS_COL){
+      dlog(matrix[i,j]," ")
+    }
+    dlog("\n")
+    
+    #f1與周圍同學友好度
+    
+    #f2
+    
+    #f3
+    
+    #f4
+  }
 }
 
 #------function------
@@ -77,8 +108,9 @@ studentData<-read.table(STUDENT_DATA_PATH, skip = 1, header = FALSE, sep =',')
 seatMatrix<-matrix(c(1:CLASS_SIZE),nrow=CLASS_ROW,ncol=CLASS_COL,byrow=TRUE)
 
 cat("------init chromosome------\n")
-chromosome=makeChromosome()
+chromosomes=makeChromosome()
 for(i in 1:POPULATION_SIZE){
-  cat(paste0("chromosome",i),chromosome[i,],"\n")
+  caculateFitnessValue(chromosomes[i,])
+  cat(paste0("chromosome",i),chromosomes[i,],"\n\n")
 }
 
