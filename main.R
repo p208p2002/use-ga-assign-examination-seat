@@ -142,6 +142,8 @@ caculateFitnessValue<-function(chromosome){
       f2Val = f2Val + abs((selfUsualGrades*length(nearByStudent)-nearByStudentUsualGrades)*F2_WEIGHT/length(nearByStudent))*-1
       
       #f3操行成績越低座位要越前面
+      
+      
       #f4鄰近座位性別不同較好
       
       
@@ -165,7 +167,8 @@ seatMatrix<-matrix(c(1:CLASS_SIZE),nrow=CLASS_ROW,ncol=CLASS_COL,byrow=TRUE)
 cat("------init chromosome------\n")
 chromosomes=makeChromosome()
 for(i in 1:POPULATION_SIZE){
-  caculateFitnessValue(chromosomes[i,])
   cat(paste0("chromosome",i),chromosomes[i,],"\n")
+  caculateFitnessValue(chromosomes[i,])
+  cat("\n")
 }
 
