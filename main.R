@@ -19,12 +19,12 @@ F3_WEIGHT=0.1
 
 #GA setting
 POPULATION_SIZE = 6 #世代大小(必須是偶數)
-CROSS_OVER_LEN = 3 #交配長度
+CROSS_OVER_LEN = 2 #交配長度
 MUTATION_ENABLE = 1
 MUTATION_VALUE = 75 #10=1% 1=0.1%
 ELITE_ENABLE=1 #菁英政策 0=disable 1=enable 
 DO_TIMES=2000
-VAILD_TIMES = 100
+VAILD_TIMES = 1
 
 #------function------
 #cat for debug mode
@@ -80,7 +80,7 @@ makeChromosome<-function(populationSize=POPULATION_SIZE,row=CLASS_ROW,col=CLASS_
   return(chromosome)
 }
 
-getNearByStudents<-function(studentSeatMatrix,stuAt_y,stuAt_x){
+getNearByStudents<-function(studentSeatMatrix,stuAt_y,stuAt_x,withOutUpSide=0){
   #
   nearByStudents = array()
   hasLeft = 0
@@ -100,6 +100,12 @@ getNearByStudents<-function(studentSeatMatrix,stuAt_y,stuAt_x){
     hasRightUp = 1
   if(stuAt_x+1 <= CLASS_COL)
     hasRight = 1
+  
+  #
+  if(withOutUpSide){
+    hasRightUp = 0
+    hasLeftUp = 0
+  }
   
   #
   if(hasLeft)
@@ -150,6 +156,7 @@ caculateFitnessValue<-function(chromosome){
       selfPerformanceScore = studentData[self,5]
       f3Val = f3Val + (selfPerformanceScore*F3_WEIGHT*i*F3_WEIGHT)^2
       
+      nearByStudent = getNearByStudents(matrix,i,j,1)
       #f4鄰近座位性別不同較好
       selfSex = studentData[self,3]
       for(k in 1:length(nearByStudent)){
@@ -193,16 +200,24 @@ doMutation<-function(chromosome,col=CLASS_COL,row=CLASS_ROW){
 
 #------function------
 
-
-
-#
-globalLog = array()
-logMaxChromosome = array()
-logMaxFitnessValue = 0
 #Student data
 studentData<-read.table(STUDENT_DATA_PATH, skip = 1, header = FALSE, sep =',')
 #座位編號陣列
 seatMatrix<-matrix(c(1:CLASS_SIZE),nrow=CLASS_ROW,ncol=CLASS_COL,byrow=TRUE)
+
+#OPT ANS
+optChromosome = c(1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16)
+optAns = caculateFitnessValue(optChromosome)
+optTimes = 0
+
+#vaild log
+gaps = array()
+
+for(x in 1:VAILD_TIMES){
+#
+globalLog = array()
+logMaxChromosome = array()
+logMaxFitnessValue = 0
 
 cat("------init chromosome------\n")
 chromosomes=makeChromosome()
@@ -223,19 +238,11 @@ cPoint2=0
 CrossOverTmp=array()
 CrossOverTmp2=array()
 
-
-#OPT ANS
-optChromosome = c(1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16)
-optAns = caculateFitnessValue(optChromosome)
-
-#vaild log
-gaps = array()
-
-for(x in 1:VAILD_TIMES){
-  
   for(k in 1:DO_TIMES){
-    if(logMaxFitnessValue >= optAns)
+    if(logMaxFitnessValue >= optAns){
+      optTimes = optTimes+1
       break;
+    }
     
     odd<-seq(from = 1,to = (POPULATION_SIZE),by = 2)
     for(i in odd) { 
@@ -344,7 +351,6 @@ for(x in 1:VAILD_TIMES){
     
     #log
     maxFtv = max(fitnessValues)
-    globalLog[k]=maxFtv
     if(maxFtv > logMaxFitnessValue){
       logMaxFitnessValue = maxFtv
       for(i in 1:POPULATION_SIZE){
@@ -353,6 +359,7 @@ for(x in 1:VAILD_TIMES){
         }
       }
     }
+    globalLog[k] = logMaxFitnessValue
     
     
     #選擇下一代(輪盤法)
@@ -404,6 +411,7 @@ for(x in 1:VAILD_TIMES){
     
   }
   plot(globalLog)
+  cat("\n")
   gaAns = caculateFitnessValue(logMaxChromosome)
   optAns = caculateFitnessValue(optChromosome)
   gap = (optAns-gaAns)/optAns*100
@@ -417,4 +425,6 @@ for(x in 1:VAILD_TIMES){
 }
 
 cat("\n\n")
-cat("gaps",gaps)
+cat("gaps avg:",mean(gaps))
+cat("\n")
+cat("opt times:",optTimes)
