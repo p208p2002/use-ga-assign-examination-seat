@@ -23,7 +23,7 @@ CROSS_OVER_LEN = 2 #交配長度
 MUTATION_ENABLE = 1
 MUTATION_VALUE = 75 #10=1% 1=0.1%
 ELITE_ENABLE=1 #菁英政策 0=disable 1=enable 
-DO_TIMES=2000
+DO_TIMES=5000
 VAILD_TIMES = 1
 
 #------function------
@@ -214,29 +214,29 @@ optTimes = 0
 gaps = array()
 
 for(x in 1:VAILD_TIMES){
-#
-globalLog = array()
-logMaxChromosome = array()
-logMaxFitnessValue = 0
-
-cat("------init chromosome------\n")
-chromosomes=makeChromosome()
-for(i in 1:POPULATION_SIZE){
-  cat(paste0("chromosome",i),chromosomes[i,],"\n")
-  ftv=caculateFitnessValue(chromosomes[i,])
-  cat(ftv)
-  cat("\n")
-}
-
-##
-cLen=0
-cPoint=0
-
-cLen2=0
-cPoint2=0
-
-CrossOverTmp=array()
-CrossOverTmp2=array()
+  #
+  globalLog = array()
+  logMaxChromosome = array()
+  logMaxFitnessValue = 0
+  
+  cat("------init chromosome------\n")
+  chromosomes=makeChromosome()
+  for(i in 1:POPULATION_SIZE){
+    cat(paste0("chromosome",i),chromosomes[i,],"\n")
+    ftv=caculateFitnessValue(chromosomes[i,])
+    cat(ftv)
+    cat("\n")
+  }
+  
+  ##
+  cLen=0
+  cPoint=0
+  
+  cLen2=0
+  cPoint2=0
+  
+  CrossOverTmp=array()
+  CrossOverTmp2=array()
 
   for(k in 1:DO_TIMES){
     if(logMaxFitnessValue >= optAns){
