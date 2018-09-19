@@ -157,10 +157,14 @@ caculateFitnessValue<-function(chromosome){
     }
   }
   
+  fitnessValue = f1Val + f2Val + f3Val + f4Val
+  cat("fitnessValue",fitnessValue," ")
   cat("f1",f1Val," ")
   cat("f2",f2Val," ")
   cat("f3",f3Val," ")
   cat("f4",f4Val,"\n")
+  
+  return(fitnessValue)
 }
 
 #------function------
@@ -179,5 +183,9 @@ for(i in 1:POPULATION_SIZE){
   cat(paste0("chromosome",i),chromosomes[i,],"\n")
   caculateFitnessValue(chromosomes[i,])
   cat("\n")
+}
+
+for(i in 1:DO_TIMES){
+  
 }
 
