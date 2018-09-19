@@ -401,4 +401,5 @@ cat("\n")
 cat("GA ANS",caculateFitnessValue(logMaxChromosome))
 cat("\n")
 cat("Optimization Ans",caculateFitnessValue(optChromosome))
+decode(logMaxChromosome)
 
