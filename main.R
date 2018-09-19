@@ -23,7 +23,7 @@ CROSS_OVER_LEN = 3 #交配長度
 MUTATION_ENABLE = 1
 MUTATION_VALUE = 75 #10=1% 1=0.1%
 ELITE_ENABLE=1 #菁英政策 0=disable 1=enable 
-DO_TIMES=5000
+DO_TIMES=1000
 
 #------function------
 #cat for debug mode
@@ -117,6 +117,10 @@ getNearByStudents<-function(studentSeatMatrix,stuAt_y,stuAt_x){
 }
 
 caculateFitnessValue<-function(chromosome){
+  
+  if(length(chromosome)==1)
+    return(0)
+  
   matrix = decode(chromosome)
   f1Val = 0
   f2Val = 0
@@ -167,11 +171,33 @@ caculateFitnessValue<-function(chromosome){
   return(fitnessValue)
 }
 
+crossOverLen<-function(setCrossOverLen = CROSS_OVER_LEN){
+  return(floor(runif(1, min=1, max=(setCrossOverLen)+1)))
+}
+
+crossOverPoint<-function(crossOverLen,col=CLASS_COL,row=CLASS_ROW){
+  return(floor(runif(1, min=1, max=(col*row-crossOverLen)+1)))
+}
+
+doMutation<-function(chromosome,col=CLASS_COL,row=CLASS_ROW){
+  a=floor(runif(1, min=1, max=(col*row)+1))
+  b=floor(runif(1, min=1, max=(col*row)+1))
+  
+  tmpa=chromosome[a]
+  chromosome[a]=chromosome[b]
+  chromosome[b]=tmpa
+  
+  return(chromosome)
+}
+
 #------function------
 
 
 
-
+#
+globalLog = array()
+logMaxChromosome = array()
+logMaxFitnessValue = 0
 #Student data
 studentData<-read.table(STUDENT_DATA_PATH, skip = 1, header = FALSE, sep =',')
 #座位編號陣列
@@ -181,11 +207,191 @@ cat("------init chromosome------\n")
 chromosomes=makeChromosome()
 for(i in 1:POPULATION_SIZE){
   cat(paste0("chromosome",i),chromosomes[i,],"\n")
-  caculateFitnessValue(chromosomes[i,])
+  ftv=caculateFitnessValue(chromosomes[i,])
+  cat(ftv)
   cat("\n")
 }
 
-for(i in 1:DO_TIMES){
+##
+cLen=0
+cPoint=0
+
+cLen2=0
+cPoint2=0
+
+CrossOverTmp=array()
+CrossOverTmp2=array()
+
+
+for(k in 1:DO_TIMES){
+  odd<-seq(from = 1,to = (POPULATION_SIZE),by = 2)
+    for(i in odd) { 
+      #清空資料
+      CrossOverTmp=array()
+      CrossOverTmp2=array()
+      
+      #隨機產生交配段1
+      cLen=crossOverLen() #cross over length 交配長度
+      cPoint=crossOverPoint(cLen) #cross over point 交配點
+      
+      #儲存交配段1
+      for(j in 1:cLen){
+        CrossOverTmp[j]=chromosomes[i,cPoint+j-1]
+      }
+      
+      #隨機產生交配段2
+      cLen2=cLen
+      cPoint2=crossOverPoint(cLen2)
+      
+      #儲存交配段2
+      for(j in 1:cLen2){
+        CrossOverTmp2[j]=chromosomes[i+1,cPoint2+j-1]
+      }
+      
+      #交配 奇<偶
+      for(l in 1:cLen){
+        chromosomes[i,cPoint+l-1]=CrossOverTmp2[l]
+      }
+      
+      #交配 偶<奇
+      for(l in 1:cLen2){
+        chromosomes[i+1,cPoint2+l-1]=CrossOverTmp[l]
+      }
+    }
+  
+  ##重新排列
+  #找到重複的數值
+  repeatChromosomeAndPoint<-matrix(c(0:0),nrow=POPULATION_SIZE,ncol=CLASS_COL*CLASS_ROW,byrow=TRUE)
+  odd2<-seq(from = 1,to = (POPULATION_SIZE),by = 2)
+  for(m in odd2){
+    for(i in 1:(CLASS_COL*CLASS_ROW)){
+      for(j in 1:(CLASS_COL*CLASS_ROW)){
+        if(i!=j){
+          if(chromosomes[m,i]==chromosomes[m,j]){
+            repeatChromosomeAndPoint[m,i]=chromosomes[m,i]
+          }
+          if(chromosomes[m+1,i]==chromosomes[m+1,j]){
+            repeatChromosomeAndPoint[m+1,i]=chromosomes[m+1,i]
+          }  
+        }
+      }
+    }
+  }
+  
+  #排除重複
+  counta<-seq(from = CLASS_COL*CLASS_ROW,to = 1,by = -1)
+  countb<-seq(from =1,to = CLASS_COL*CLASS_ROW,by = 1)
+  for(j in 1:POPULATION_SIZE){
+    for(i in counta ){
+      if(repeatChromosomeAndPoint[j,i]!=0){
+        tmpa=repeatChromosomeAndPoint[j,i]
+        for(m in countb){
+          if(repeatChromosomeAndPoint[j,m]==tmpa){
+            repeatChromosomeAndPoint[j,m]=0
+            break
+          }
+        }
+      }
+    }
+  }
+  
+  #交換
+  for(i in odd2){
+    for(j in counta){
+      if(repeatChromosomeAndPoint[i,j]!=0){
+        repeatChromosomeAndPoint[i,j]=0
+        for(m in counta){
+          if(repeatChromosomeAndPoint[i+1,m]!=0){
+            repeatChromosomeAndPoint[i+1,m]=0
+            #交換
+            tmpVal=chromosomes[i,j]
+            chromosomes[i,j]=chromosomes[i+1,m]
+            chromosomes[i+1,m]=tmpVal
+            break
+          }
+        }
+      }
+    }
+  }
+  
+  #交配完成
+  fitnessValues = array()
+  totalFitnessValue = 0
+  selectChange = array()
+  cat(paste0("世代:",k),"\n")
+  for(i in 1:POPULATION_SIZE){
+    #cat(paste0("chromosome",i),chromosomes[i,],"\n")
+    fitnessValue = caculateFitnessValue(chromosomes[i,])
+    totalFitnessValue = totalFitnessValue + fitnessValue
+    selectChange[i] = totalFitnessValue
+    fitnessValues[i] = fitnessValue
+    cat(fitnessValue)
+    cat("\n")
+  }
+  
+  #log
+  maxFtv = max(fitnessValues)
+  globalLog[k]=maxFtv
+  if(maxFtv > logMaxFitnessValue){
+    logMaxFitnessValue = maxFtv
+    for(i in 1:POPULATION_SIZE){
+      if(maxFtv==fitnessValues[i]){
+        logMaxChromosome=chromosomes[i,]
+      }
+    }
+  }
+  
+  
+  #選擇下一代(輪盤法)
+  newChromosomes=chromosomes
+  Russian_Roulette=0
+  for(i in 1:POPULATION_SIZE){
+    Russian_Roulette[i]=(runif(1, min=0, max=(totalFitnessValue)+1))
+  }
+  for(i in 1:POPULATION_SIZE){
+    for(j in 1:POPULATION_SIZE){
+      if(Russian_Roulette[i]>=selectChange[j]){
+        newChromosomes[i,]=chromosomes[j,]
+      }
+    }
+  }
+  
+  #產生新世代
+  chromosomes=newChromosomes
+  
+  #找出新世代最低
+  
+  minChromosomeId=0
+  newFitVla = array()
+  for(i in 1:POPULATION_SIZE){
+    newFitVla[i] = caculateFitnessValue(chromosomes[i,])
+  }
+  minFtv = min(newFitVla)
+  for(i in 1:POPULATION_SIZE){
+    if(minFtv==newFitVla[i]){
+      minChromosomeId=i
+    }
+  }
+  
+  #踢掉弱的加入菁英
+  if(ELITE_ENABLE && logMaxFitnessValue != 0){
+    chromosomes[minChromosomeId,]=logMaxChromosome #歷史最高的
+  }
+  
+  #突變
+  if(MUTATION_ENABLE){
+    for(i in 1:POPULATION_SIZE){
+      wantMutation=floor(runif(1, min=1, max=(1000)+1))
+      if(wantMutation<=MUTATION_VALUE){
+        cat("!!!mutation!!!\n")
+        chromosomes[i,]=doMutation(chromosomes[i,])
+      }
+    }
+  }
+  
+  cat("\nmax",logMaxFitnessValue)
+  
+  #break
   
 }
 
