@@ -138,20 +138,29 @@ caculateFitnessValue<-function(chromosome){
       for(k in 1:length(nearByStudent)){
         nearByStudentUsualGrades = nearByStudentUsualGrades + studentData[nearByStudent[k],4]
       }
-      selfUsualGrades = studentData[self,4]
-      f2Val = f2Val + abs((selfUsualGrades*length(nearByStudent)-nearByStudentUsualGrades)*F2_WEIGHT/length(nearByStudent))*-1
+      selfUsualScore = studentData[self,4]
+      f2Val = f2Val + abs((selfUsualScore*length(nearByStudent)-nearByStudentUsualGrades)*F2_WEIGHT/length(nearByStudent))*-1
       
       #f3操行成績越低座位要越前面
-      
+      selfPerformanceScore = studentData[self,5]
+      f3Val = f3Val + (selfPerformanceScore*F3_WEIGHT*i*F3_WEIGHT)^2
       
       #f4鄰近座位性別不同較好
-      
-      
+      selfSex = studentData[self,3]
+      for(k in 1:length(nearByStudent)){
+        nearByStudentSex = studentData[nearByStudent[k],3]
+        if(selfSex == nearByStudentSex)
+          f4Val = f4Val - 1
+        else
+          f4Val = f4Val + 3
+      }
     }
   }
   
-  cat("f1",f1Val,"\n")
-  cat("f2",f2Val,"\n")
+  cat("f1",f1Val," ")
+  cat("f2",f2Val," ")
+  cat("f3",f3Val," ")
+  cat("f4",f4Val,"\n")
 }
 
 #------function------
