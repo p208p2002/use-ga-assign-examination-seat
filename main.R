@@ -154,7 +154,7 @@ caculateFitnessValue<-function(chromosome){
       for(k in 1:length(nearByStudent)){
         nearByStudentSex = studentData[nearByStudent[k],3]
         if(selfSex == nearByStudentSex)
-          f4Val = f4Val - 5
+          f4Val = f4Val - 1
         else
           f4Val = f4Val + 3
       }
@@ -224,7 +224,8 @@ CrossOverTmp2=array()
 
 
 #OPT ANS
-optAns = caculateFitnessValue(c(1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16))
+optChromosome = c(1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16)
+optAns = caculateFitnessValue(optChromosome)
 
 for(k in 1:DO_TIMES){
   if(logMaxFitnessValue >= optAns)
@@ -395,8 +396,9 @@ for(k in 1:DO_TIMES){
     }
   }
 }
+plot(globalLog)
 cat("\n")
 cat("GA ANS",caculateFitnessValue(logMaxChromosome))
 cat("\n")
-cat("Optimization Ans",optAns)
+cat("Optimization Ans",caculateFitnessValue(optChromosome))
 
