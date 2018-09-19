@@ -366,8 +366,18 @@ for(k in 1:DO_TIMES){
   #產生新世代
   chromosomes=newChromosomes
   
-  #找出新世代最低
+  #突變
+  if(MUTATION_ENABLE){
+    for(i in 1:POPULATION_SIZE){
+      wantMutation=floor(runif(1, min=1, max=(1000)+1))
+      if(wantMutation<=MUTATION_VALUE){
+        cat("!!!mutation!!!\n")
+        chromosomes[i,]=doMutation(chromosomes[i,])
+      }
+    }
+  }
   
+  #找出新世代最低
   minChromosomeId=0
   newFitVla = array()
   for(i in 1:POPULATION_SIZE){
@@ -385,21 +395,12 @@ for(k in 1:DO_TIMES){
     chromosomes[minChromosomeId,]=logMaxChromosome #歷史最高的
   }
   
-  #突變
-  if(MUTATION_ENABLE){
-    for(i in 1:POPULATION_SIZE){
-      wantMutation=floor(runif(1, min=1, max=(1000)+1))
-      if(wantMutation<=MUTATION_VALUE){
-        cat("!!!mutation!!!\n")
-        chromosomes[i,]=doMutation(chromosomes[i,])
-      }
-    }
-  }
+ 
 }
 plot(globalLog)
 cat("\n")
 cat("GA ANS",caculateFitnessValue(logMaxChromosome))
 cat("\n")
 cat("Optimization Ans",caculateFitnessValue(optChromosome))
-decode(logMaxChromosome)
+#decode(logMaxChromosome)
 
