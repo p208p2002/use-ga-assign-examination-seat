@@ -23,7 +23,7 @@ CROSS_OVER_LEN = 3 #交配長度
 MUTATION_ENABLE = 1
 MUTATION_VALUE = 75 #10=1% 1=0.1%
 ELITE_ENABLE=1 #菁英政策 0=disable 1=enable 
-DO_TIMES=1000
+DO_TIMES=2000
 
 #------function------
 #cat for debug mode
@@ -154,7 +154,7 @@ caculateFitnessValue<-function(chromosome){
       for(k in 1:length(nearByStudent)){
         nearByStudentSex = studentData[nearByStudent[k],3]
         if(selfSex == nearByStudentSex)
-          f4Val = f4Val - 1
+          f4Val = f4Val - 5
         else
           f4Val = f4Val + 3
       }
@@ -223,7 +223,13 @@ CrossOverTmp=array()
 CrossOverTmp2=array()
 
 
+#OPT ANS
+optAns = caculateFitnessValue(c(1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16))
+
 for(k in 1:DO_TIMES){
+  if(logMaxFitnessValue >= optAns)
+    break;
+  
   odd<-seq(from = 1,to = (POPULATION_SIZE),by = 2)
     for(i in odd) { 
       #清空資料
@@ -388,10 +394,9 @@ for(k in 1:DO_TIMES){
       }
     }
   }
-  
-  cat("\nmax",logMaxFitnessValue)
-  
-  #break
-  
 }
+cat("\n")
+cat("GA ANS",caculateFitnessValue(logMaxChromosome))
+cat("\n")
+cat("Optimization Ans",optAns)
 
