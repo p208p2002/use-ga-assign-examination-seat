@@ -21,9 +21,9 @@ F3_WEIGHT=0.1
 POPULATION_SIZE = 6 #世代大小(必須是偶數)
 CROSS_OVER_LEN = 2 #交配長度
 MUTATION_ENABLE = 1
-MUTATION_VALUE = 75 #10=1% 1=0.1%
+MUTATION_VALUE = 50 #10=1% 1=0.1%
 ELITE_ENABLE=1 #菁英政策 0=disable 1=enable 
-DO_TIMES=5000
+DO_TIMES=3500
 VAILD_TIMES = 1
 
 #------function------
