@@ -150,7 +150,7 @@ caculateFitnessValue<-function(chromosome){
         nearByStudentUsualGrades = nearByStudentUsualGrades + studentData[nearByStudent[k],4]
       }
       selfUsualScore = studentData[self,4]
-      f2Val = f2Val + abs((selfUsualScore*length(nearByStudent)-nearByStudentUsualGrades)*F2_WEIGHT/length(nearByStudent))*-1
+      f2Val = f2Val + abs((selfUsualScore*length(nearByStudent)-nearByStudentUsualGrades)/length(nearByStudent))*-1*F2_WEIGHT
       
       #f3操行成績越低座位要越前面
       selfPerformanceScore = studentData[self,5]
