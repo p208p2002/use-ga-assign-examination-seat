@@ -26,7 +26,7 @@ MUTATION_ENABLE = 1
 MUTATION_VALUE = 50 #10=1% 1=0.1%
 ELITE_ENABLE=1 #菁英政策 0=disable 1=enable 
 DO_TIMES=2000
-VAILD_TIMES = 100
+VAILD_TIMES = 500
 
 #------function------
 #cat for debug mode
@@ -391,13 +391,18 @@ for(x in 1:VAILD_TIMES){
       }
     }
     
-    #log
+    #找最高
     maxFtv = max(fitnessValues)
-    if(maxFtv > logMaxFitnessValue){
-      logMaxFitnessValue = maxFtv
-      for(i in 1:POPULATION_SIZE){
-        if(maxFtv==fitnessValues[i]){
-          logMaxChromosome=chromosomes[i,]
+    alreadyHasMaxChromosome=0
+    if(maxFtv == caculateFitnessValue(logMaxChromosome))
+      alreadyHasMaxChromosome = 1
+    else{
+      if(maxFtv > logMaxFitnessValue){
+        logMaxFitnessValue = maxFtv
+        for(i in 1:POPULATION_SIZE){
+          if(maxFtv==fitnessValues[i]){
+            logMaxChromosome=chromosomes[i,]
+          }
         }
       }
     }
@@ -428,6 +433,7 @@ for(x in 1:VAILD_TIMES){
         if(wantMutation<=MUTATION_VALUE){
           #cat("!!!mutation!!!\n")
           chromosomes[i,]=doMutation(chromosomes[i,])
+          
         }
       }
     }
@@ -445,10 +451,18 @@ for(x in 1:VAILD_TIMES){
       }
     }
     
+    #若突變後出現掉分
+    if(maxFtv > max(newFitVal)){
+        alreadyHasMaxChromosome = 0
+    }
+    
     #踢掉弱的加入菁英
-    if(ELITE_ENABLE && logMaxFitnessValue != 0){
+    if(ELITE_ENABLE && logMaxFitnessValue != 0 && alreadyHasMaxChromosome == 0){
       chromosomes[minChromosomeId,]=logMaxChromosome #歷史最高的
     }
+    
+    #染色體族群洗牌
+    chromosomes = chromosomes[sample(nrow(chromosomes)),]
     
     
   }
@@ -491,11 +505,11 @@ cat("總驗證次數:",VAILD_TIMES)
 cat("\n")
 cat("單次驗證演化上限:",DO_TIMES)
 cat("\n")
-cat("差距平均數:",mean(gaps))
+cat("平得均得分數:",mean(vGaAns))
 cat("\n")
-cat("差距中位數:",median(gaps, na.rm = FALSE))
+cat("得分中位數:",median(vGaAns, na.rm = FALSE))
 cat("\n")
-cat("差距標準差:",sd(gaps))
+cat("得分標準差:",sd(vGaAns))
 cat("\n")
 cat("達到最佳解次數:",optTimes)
 cat("\n")
