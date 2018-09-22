@@ -1,8 +1,10 @@
-rm(list=ls())
 #Please use utf-8 to open file
+rm(list=ls())
+programStartTime = Sys.time()
+
 
 #Program setting
-DEBUG = 1
+DEBUG = 0
 LOG = 0
 
 #Class ENV setting
@@ -23,8 +25,8 @@ CROSS_OVER_LEN = 2 #交配長度
 MUTATION_ENABLE = 1
 MUTATION_VALUE = 50 #10=1% 1=0.1%
 ELITE_ENABLE=1 #菁英政策 0=disable 1=enable 
-DO_TIMES=3500
-VAILD_TIMES = 1
+DO_TIMES=2000
+VAILD_TIMES = 100
 
 #------function------
 #cat for debug mode
@@ -123,6 +125,36 @@ getNearByStudents<-function(studentSeatMatrix,stuAt_y,stuAt_x,withOutUpSide=0){
   return(nearByStudents)
 }
 
+compareTwoSeatMartrix<-function(matrixA,matrixB){
+  o1=0
+  x1=0
+  for(i in 1:length(matrixA)){
+    if(matrixA[i] == matrixB[i])
+      o1=o1+1
+    else
+      x1=x1+1
+  }
+  
+  o2=0
+  x2=0
+  matrixB=matrixB[, rev(seq_len(ncol(matrixB)))]
+  for(i in 1:length(matrixA)){
+    if(matrixA[i] == matrixB[i])
+      o2=o2+1
+    else
+      x2=x2+1
+  }
+  
+  #
+  rsO = max(c(o1,o2))
+  rsX = length(matrixA) - max(rsO)
+  rate = (max(rsO))/length(matrixA)
+  
+  rs=c(rate,rsO,rsX)
+  
+  return(rs)
+}
+
 caculateFitnessValue<-function(chromosome){
   
   if(length(chromosome)==1)
@@ -170,11 +202,13 @@ caculateFitnessValue<-function(chromosome){
   }
   
   fitnessValue = f1Val + f2Val + f3Val + f4Val
-  cat("fitnessValue",fitnessValue," ")
-  cat("f1",f1Val," ")
-  cat("f2",f2Val," ")
-  cat("f3",f3Val," ")
-  cat("f4",f4Val,"\n")
+  if(LOG){
+    cat("fitnessValue",fitnessValue," ")
+    cat("f1",f1Val," ")
+    cat("f2",f2Val," ")
+    cat("f3",f3Val," ")
+    cat("f4",f4Val,"\n")
+  }
   
   return(fitnessValue)
 }
@@ -212,20 +246,24 @@ optTimes = 0
 
 #vaild log
 gaps = array()
+vGaAns = array()
 
 for(x in 1:VAILD_TIMES){
+  #
+  loopStartTime = Sys.time()
+  #cat("\f")
   #
   globalLog = array()
   logMaxChromosome = array()
   logMaxFitnessValue = 0
   
-  cat("------init chromosome------\n")
+  if(LOG)
+    cat("------init chromosome------\n")
   chromosomes=makeChromosome()
   for(i in 1:POPULATION_SIZE){
-    cat(paste0("chromosome",i),chromosomes[i,],"\n")
     ftv=caculateFitnessValue(chromosomes[i,])
-    cat(ftv)
-    cat("\n")
+    if(LOG)
+      cat(paste0("chromosome",i),chromosomes[i,],"(",ftv,")","\n")
   }
   
   ##
@@ -237,7 +275,7 @@ for(x in 1:VAILD_TIMES){
   
   CrossOverTmp=array()
   CrossOverTmp2=array()
-
+  
   for(k in 1:DO_TIMES){
     if(logMaxFitnessValue >= optAns){
       optTimes = optTimes+1
@@ -338,15 +376,19 @@ for(x in 1:VAILD_TIMES){
     fitnessValues = array()
     totalFitnessValue = 0
     selectChange = array()
-    cat(paste0("世代:",k),"\n")
+    if(LOG)
+      cat(paste0("世代:",k),"\n")
+    
     for(i in 1:POPULATION_SIZE){
       #cat(paste0("chromosome",i),chromosomes[i,],"\n")
       fitnessValue = caculateFitnessValue(chromosomes[i,])
       totalFitnessValue = totalFitnessValue + fitnessValue
       selectChange[i] = totalFitnessValue
       fitnessValues[i] = fitnessValue
-      cat(fitnessValue)
-      cat("\n")
+      if(LOG){
+        cat(fitnessValue)
+        cat("\n")
+      }
     }
     
     #log
@@ -384,7 +426,7 @@ for(x in 1:VAILD_TIMES){
       for(i in 1:POPULATION_SIZE){
         wantMutation=floor(runif(1, min=1, max=(1000)+1))
         if(wantMutation<=MUTATION_VALUE){
-          cat("!!!mutation!!!\n")
+          #cat("!!!mutation!!!\n")
           chromosomes[i,]=doMutation(chromosomes[i,])
         }
       }
@@ -392,13 +434,13 @@ for(x in 1:VAILD_TIMES){
     
     #找出新世代最低
     minChromosomeId=0
-    newFitVla = array()
+    newFitVal = 0
     for(i in 1:POPULATION_SIZE){
-      newFitVla[i] = caculateFitnessValue(chromosomes[i,])
+      newFitVal[i] = caculateFitnessValue(chromosomes[i,])
     }
-    minFtv = min(newFitVla)
+    minFtv = min(newFitVal)
     for(i in 1:POPULATION_SIZE){
-      if(minFtv==newFitVla[i]){
+      if(minFtv==newFitVal[i]){
         minChromosomeId=i
       }
     }
@@ -410,21 +452,54 @@ for(x in 1:VAILD_TIMES){
     
     
   }
-  plot(globalLog)
-  cat("\n")
+  #plot(globalLog)
   gaAns = caculateFitnessValue(logMaxChromosome)
   optAns = caculateFitnessValue(optChromosome)
   gap = (optAns-gaAns)/optAns*100
   gaps[x] = gap
+  vGaAns[x] = gaAns
   cat("\n")
-  cat("GA ANS",gaAns)
+  cat("驗證:",x)
   cat("\n")
-  cat("Optimization Ans",optAns)
+  cat("世代:",k)
   cat("\n")
-  cat("gap:",gap)
+  cat("最高適應染色體:",logMaxChromosome)
+  cat("\n")
+  cat("GA最高適應值:",gaAns)
+  cat("\n")
+  cat("最佳化適應值:",optAns)
+  cat("\n")
+  cat("差距比例:",gap)
+  cat("\n")
+  
+  compareAns = compareTwoSeatMartrix(decode(optChromosome),decode(logMaxChromosome))
+  cat("排序正確率:",compareAns[1])
+  cat("\n")
+  cat("排序正確/錯誤:",compareAns[2],"/",compareAns[3])
+  cat("\n")
+  cat("運行秒數:",Sys.time()-loopStartTime)
+  cat("\n")
+  
+  #
+  plot(vGaAns,ylim=c(250,450))
+  abline(h=optAns, col="red")
 }
 
-cat("\n\n")
-cat("gaps avg:",mean(gaps))
+#cat("\f")
 cat("\n")
-cat("opt times:",optTimes)
+cat("總驗證次數:",VAILD_TIMES)
+cat("\n")
+cat("單次驗證演化上限:",DO_TIMES)
+cat("\n")
+cat("差距平均數:",mean(gaps))
+cat("\n")
+cat("差距中位數:",median(gaps, na.rm = FALSE))
+cat("\n")
+cat("差距標準差:",sd(gaps))
+cat("\n")
+cat("達到最佳解次數:",optTimes)
+cat("\n")
+cat("總運行秒數:",Sys.time()-programStartTime)
+
+#plot(vGaAns,ylim=c(250,450))
+#abline(h=optAns, col="red")
