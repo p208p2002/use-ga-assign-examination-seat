@@ -13,7 +13,7 @@ CLASS_COL = 4
 CLASS_SIZE = CLASS_ROW*CLASS_COL
 
 #Student data
-STUDENT_DATA_PATH = '.\\rdata_utf8_33.csv'
+STUDENT_DATA_PATH = '.\\rdata_opt_44.csv'
 
 #Fitness weight setting
 F2_WEIGHT=0.2
