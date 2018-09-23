@@ -26,7 +26,7 @@ MUTATION_ENABLE = 1
 MUTATION_VALUE = 50 #10=1% 1=0.1%
 ELITE_ENABLE=1 #菁英政策 0=disable 1=enable 
 DO_TIMES=2000
-VAILD_TIMES = 500
+VAILD_TIMES = 1
 
 #------function------
 #cat for debug mode
@@ -262,7 +262,7 @@ for(x in 1:VAILD_TIMES){
   chromosomes=makeChromosome()
   for(i in 1:POPULATION_SIZE){
     ftv=caculateFitnessValue(chromosomes[i,])
-    if(LOG)
+    if(!LOG)
       cat(paste0("chromosome",i),chromosomes[i,],"(",ftv,")","\n")
   }
   
@@ -466,7 +466,7 @@ for(x in 1:VAILD_TIMES){
     
     
   }
-  #plot(globalLog)
+  plot(globalLog)
   gaAns = caculateFitnessValue(logMaxChromosome)
   optAns = caculateFitnessValue(optChromosome)
   gap = (optAns-gaAns)/optAns*100
@@ -495,8 +495,8 @@ for(x in 1:VAILD_TIMES){
   cat("\n")
   
   #
-  plot(vGaAns,ylim=c(250,450))
-  abline(h=optAns, col="red")
+  #plot(vGaAns,ylim=c(250,450))
+  #abline(h=optAns, col="red")
 }
 
 #cat("\f")
