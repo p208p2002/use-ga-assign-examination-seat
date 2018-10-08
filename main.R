@@ -25,8 +25,8 @@ CROSS_OVER_LEN = 2 #交配長度
 MUTATION_ENABLE = 1
 MUTATION_VALUE = 50 #10=1% 1=0.1%
 ELITE_ENABLE=1 #菁英政策 0=disable 1=enable 
-DO_TIMES=2000
-VAILD_TIMES = 1
+DO_TIMES=2000 #要做多少世代
+VAILD_TIMES = 1 #要進行幾輪
 
 #------function------
 #cat for debug mode
@@ -277,7 +277,7 @@ for(x in 1:VAILD_TIMES){
   CrossOverTmp2=array()
   
   for(k in 1:DO_TIMES){
-    if(logMaxFitnessValue >= optAns){
+    if(logMaxFitnessValue >= optAns){ #如果已經達到最佳解則停止
       optTimes = optTimes+1
       break;
     }
@@ -494,9 +494,15 @@ for(x in 1:VAILD_TIMES){
   cat("運行秒數:",Sys.time()-loopStartTime)
   cat("\n")
   
-  #
-  #plot(vGaAns,ylim=c(250,450))
-  #abline(h=optAns, col="red")
+  #如果驗證次數>1印出每次驗證節過最高適應函數值，如果=1則印出適應函數值變化
+  if(VAILD_TIMES > 1){
+    plot(vGaAns,ylim=c(250,450))
+    abline(h=optAns, col="red")
+  }
+  else{
+    plot(globalLog,ylim=c(250,450))
+    abline(h=optAns, col="red")
+  }
 }
 
 #cat("\f")

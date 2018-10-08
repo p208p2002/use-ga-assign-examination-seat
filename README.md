@@ -17,6 +17,10 @@
 - ~~rdata.csv : 學生資料~~
 > 如有亂碼請以utf-8編碼開啟
 
+## 設定
+- line 1~37
+- line 242
+
 ## 程式結果
 - 此次演算結果的最高值 `$ caculateFitnessValue(logMaxChromosome)`
 - 顯示最終教室的排序矩陣 `$ decode(logMaxChromosome)`
